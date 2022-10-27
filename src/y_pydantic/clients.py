@@ -21,8 +21,12 @@ class ClientPool:
         self.client_cls = client_cls
 
     def create_client(self):
+        """
+        - Create a new client of type self.client_cls
+        - If other clients exist in the pool, sync the new client with the existing state
+        - Add new client to the pool so it gets synced in calls to pool.sync(diff)
+        """
         client = self.client_cls(pool=self)
-        self.clients.append(client)
         # In over-the-wire yjs protocol, the three steps below would be described as:
         # - send "sync step 1" with your state vector
         # - peer sends "sync step 2" with a diff you should apply
